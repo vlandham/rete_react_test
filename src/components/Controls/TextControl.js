@@ -17,7 +17,9 @@ export default class TextControl extends Rete.Control {
     this.key = key;
     this.component = TextControl.component;
 
-    const initial = node.data[key] || '';
+    // const initial = node.data[key] || '';
+    const initial =
+      'https://gist.githubusercontent.com/mbostock/4063570/raw/11847750012dfe5351ee1eb290d2a254a67051d0/flare.csv';
 
     node.data[key] = initial;
     this.props = {

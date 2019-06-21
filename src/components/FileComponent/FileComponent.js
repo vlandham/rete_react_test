@@ -4,6 +4,20 @@ import Papa from 'papaparse';
 import TextControl from '../Controls/TextControl';
 import { dataSocket } from '../Sockets';
 
+const getFile = async rawFile => {
+  const parseFile = rawFile => {
+    return new Promise(resolve => {
+      Papa.parse(rawFile, {
+        download: true,
+        complete: results => {
+          resolve(results.data);
+        },
+      });
+    });
+  };
+  const parsedData = await parseFile(rawFile);
+  return parsedData;
+};
 export default class FileComponent extends Rete.Component {
   constructor() {
     super('File');
@@ -12,20 +26,13 @@ export default class FileComponent extends Rete.Component {
   builder(node) {
     var out1 = new Rete.Output('data', 'Data', dataSocket);
     var ctrl = new TextControl(this.editor, 'filename', node);
-    node.data.filename =
-      'https://gist.githubusercontent.com/mbostock/4063570/raw/11847750012dfe5351ee1eb290d2a254a67051d0/flare.csv';
 
     return node.addControl(ctrl).addOutput(out1);
   }
 
   worker(node, inputs, outputs) {
     if (node.data.filename && node.data.filename.length > 0) {
-      const parsed = Papa.parse(node.data.filename, {
-        header: true,
-        dynamicTyping: true,
-        trimHeaders: true,
-        skipEmptyLines: true,
-      });
+      const parsed = getFile(node.data.filename);
 
       node.data.data = parsed;
     } else {
@@ -34,5 +41,6 @@ export default class FileComponent extends Rete.Component {
 
     outputs['data'] = node.data.data;
     console.log(node.data);
+    console.log(node.data.data);
   }
 }

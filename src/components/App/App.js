@@ -6,12 +6,18 @@ import AreaPlugin from 'rete-area-plugin';
 
 import NumComponent from '../NumComponent/NumComponent';
 import AddComponent from '../AddComponent/AddComponent';
+import CountComponent from '../CountComponent/CountComponent';
 import FileComponent from '../FileComponent/FileComponent';
 
 import './App.css';
 
 export async function createEditor(container) {
-  var components = [new NumComponent(), new AddComponent(), new FileComponent()];
+  var components = [
+    new NumComponent(),
+    new AddComponent(),
+    new FileComponent(),
+    new CountComponent(),
+  ];
 
   var editor = new Rete.NodeEditor('demo@0.1.0', container);
   editor.use(ConnectionPlugin);
@@ -28,19 +34,23 @@ export async function createEditor(container) {
   var n2 = await components[0].createNode({ num: 3 });
   var add = await components[1].createNode();
   var file = await components[2].createNode();
+  const count = await components[3].createNode();
 
   n1.position = [80, 200];
   n2.position = [80, 400];
   add.position = [500, 240];
   file.position = [80, 10];
+  count.position = [500, 10];
 
   editor.addNode(n1);
   editor.addNode(n2);
   editor.addNode(add);
   editor.addNode(file);
+  editor.addNode(count);
 
   editor.connect(n1.outputs.get('num'), add.inputs.get('num1'));
   editor.connect(n2.outputs.get('num'), add.inputs.get('num2'));
+  editor.connect(file.outputs.get('data'), count.inputs.get('data'));
 
   editor.on('process nodecreated noderemoved connectioncreated connectionremoved', async () => {
     console.log('process');
